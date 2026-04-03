@@ -1,22 +1,49 @@
 version: 0.1
-
 component: build
 
+timeoutInSeconds: 900
+
+shell: bash
+
+env:
+  variables:
+    JAVA_HOME: "/usr/lib/jvm/java-11-openjdk"
+
 steps:
-  - type: Command
-    name: Install Maven Dependencies
+
+  - name: Check Environment
     command: |
-      echo "Installing Maven dependencies"
+      echo "Checking Java and Maven..."
+      java -version
+      mvn -version
+
+  - name: Install Maven (if not present)
+    command: |
+      if ! command -v mvn &> /dev/null
+      then
+        echo "Maven not found. Installing..."
+        sudo apt update
+        sudo apt install -y maven
+      else
+        echo "Maven already installed"
+      fi
+
+  - name: Clean & Install Dependencies
+    command: |
+      echo "Running mvn clean install..."
       mvn clean install -DskipTests
 
-  - type: Command
-    name: Run Tests (Regression Testing)
+  - name: Run Tests (Regression Testing)
     command: |
-      echo "Running tests"
+      echo "Running tests..."
       mvn test
 
-  - type: Command
-    name: Build Package
+  - name: Build Package
     command: |
-      echo "Packaging application"
+      echo "Packaging application..."
       mvn package
+
+outputArtifacts:
+  - name: build_output
+    type: BINARY
+    location: target
