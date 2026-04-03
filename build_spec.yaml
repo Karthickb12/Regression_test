@@ -5,42 +5,42 @@ timeoutInSeconds: 900
 
 shell: bash
 
-env:
-  variables:
-    JAVA_HOME: "/usr/lib/jvm/java-11-openjdk"
-
 steps:
-
-  - name: Check Environment
+  - type: Command
+    name: Check Environment
     command: |
       echo "Checking Java and Maven..."
       java -version
       mvn -version
 
-  - name: Install Maven (if not present)
+  - type: Command
+    name: Install Maven
     command: |
       if ! command -v mvn &> /dev/null
       then
-        echo "Maven not found. Installing..."
+        echo "Installing Maven..."
         sudo apt update
         sudo apt install -y maven
       else
         echo "Maven already installed"
       fi
 
-  - name: Clean & Install Dependencies
+  - type: Command
+    name: Build Project
     command: |
-      echo "Running mvn clean install..."
+      echo "Running Maven build..."
       mvn clean install -DskipTests
 
-  - name: Run Tests (Regression Testing)
+  - type: Command
+    name: Run Tests
     command: |
       echo "Running tests..."
       mvn test
 
-  - name: Build Package
+  - type: Command
+    name: Package Application
     command: |
-      echo "Packaging application..."
+      echo "Packaging..."
       mvn package
 
 outputArtifacts:
