@@ -1,49 +1,8 @@
 version: 0.1
 component: build
 
-timeoutInSeconds: 900
-
-shell: bash
-
 steps:
   - type: Command
-    name: Check Environment
+    name: Run Regression Test
     command: |
-      echo "Checking Java and Maven..."
-      java -version
-      mvn -version
-
-  - type: Command
-    name: Install Maven
-    command: |
-      if ! command -v mvn &> /dev/null
-      then
-        echo "Installing Maven..."
-        sudo apt update
-        sudo apt install -y maven
-      else
-        echo "Maven already installed"
-      fi
-
-  - type: Command
-    name: Build Project
-    command: |
-      echo "Running Maven build..."
-      mvn clean install -DskipTests
-
-  - type: Command
-    name: Run Tests
-    command: |
-      echo "Running tests..."
-      mvn test
-
-  - type: Command
-    name: Package Application
-    command: |
-      echo "Packaging..."
-      mvn package
-
-outputArtifacts:
-  - name: build_output
-    type: BINARY
-    location: target
+      mvn clean test
